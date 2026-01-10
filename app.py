@@ -18,7 +18,7 @@ if uploaded:
     encoded_content = base64.b64encode(content).decode()
     path = f"storage/{uploaded.name}"
 
-    url = f"https://api.github.com/repos/{REPO}/contents/{path}"
+    url = f"https://github.com/jumaniyozusanov/storage.git"
 
     data = {
         "message": f"Upload {uploaded.name}",
@@ -40,8 +40,7 @@ st.divider()
 # 2️⃣ Gallery va Download
 st.subheader("📂 Cloud ichidagi fayllar")
 
-url_get = "https://github.com/jumaniyozusanov/storage.git"
-
+url_get = f"https://github.com/jumaniyozusanov/storage.git"
 response = requests.get(url_get, headers=HEADERS)
 
 if response.status_code == 200:
