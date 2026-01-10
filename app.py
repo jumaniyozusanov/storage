@@ -40,7 +40,8 @@ st.divider()
 # 2️⃣ Gallery va Download
 st.subheader("📂 Cloud ichidagi fayllar")
 
-url_get = f"https://api.github.com/repos/{REPO}/contents/storage"
+url_get = "https://github.com/jumaniyozusanov/storage.git"
+
 response = requests.get(url_get, headers=HEADERS)
 
 if response.status_code == 200:
