@@ -3,11 +3,13 @@ import requests
 import base64
 
 st.set_page_config(page_title="☁️ My Cloud Drive", layout="wide")
-st.title("☁️ My Personal Cloud")
+st.title("☁️ My Personal Cloud Drive")
 
-# 🔹 GitHub public repo nomi
-REPO = "jumaniyozusanov/storage"
-HEADERS = {}  # Public repo, shuning uchun token shart emas
+# 🔹 Streamlit Secrets
+TOKEN = st.secrets["GITHUB_TOKEN"]
+REPO = st.secrets["GITHUB_REPO"]
+
+HEADERS = {"Authorization": f"token {TOKEN}"}
 
 # ----------------------
 # 1️⃣ Fayl yuklash
@@ -18,14 +20,14 @@ if uploaded:
     encoded_content = base64.b64encode(content).decode()
     path = f"storage/{uploaded.name}"
 
-    url = f"https://api.github.com/repos/jumaniyozusanov/storage/contents//{path}"
+    url_put = f"https://api.github.com/repos/{REPO}/contents/{path}"
 
     data = {
         "message": f"Upload {uploaded.name}",
         "content": encoded_content
     }
 
-    response = requests.put(url, json=data, headers=HEADERS)
+    response = requests.put(url_put, json=data, headers=HEADERS)
 
     if response.status_code == 201:
         st.success(f"✅ Saqlandi: {uploaded.name}")
@@ -40,20 +42,25 @@ st.divider()
 # 2️⃣ Gallery va Download
 st.subheader("📂 Cloud ichidagi fayllar")
 
-url_get = "https://api.github.com/repos/jumaniyozusanov/storage/contents/storage?ref=main"
+url_get = f"https://api.github.com/repos/{REPO}/contents/storage?ref=main"
 response = requests.get(url_get, headers=HEADERS)
 
 if response.status_code == 200:
     files = response.json()
-    for file in files:
-        file_name = file["name"]
-        download_url = file["download_url"]
+    if len(files) == 0:
+        st.info("📂 Storage bo‘sh, birinchi faylni yuklang")
+    else:
+        for file in files:
+            file_name = file["name"]
+            download_url = file["download_url"]
 
-        st.write(file_name)
+            st.write(file_name)
 
-        if file_name.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
-            st.image(download_url, width=300)
+            if file_name.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
+                st.image(download_url, width=300)
 
-        st.download_button("⬇ Download", requests.get(download_url).content, file_name)
+            st.download_button("⬇ Download", requests.get(download_url).content, file_name)
+elif response.status_code == 404:
+    st.info("📂 Storage papkasi mavjud emas, birinchi faylni yuklang")
 else:
-    st.error("❌ Fayllarni olishda xatolik yuz berdi")
+    st.error(f"❌ Xatolik: {response.status_code} - {response.text}")
