@@ -5,15 +5,13 @@ import base64
 st.set_page_config(page_title="☁️ My Cloud Drive", layout="wide")
 st.title("☁️ My Personal Cloud")
 
-# 🔹 GitHub Secrets
-TOKEN = st.secrets["GITHUB_TOKEN"]
-REPO = st.secrets["GITHUB_REPO"]
-
-HEADERS = {"Authorization": f"token {TOKEN}"}
+# 🔹 GitHub public repo nomi
+REPO = "jumaniyozusanov/storage"
+HEADERS = {}  # Public repo, shuning uchun token shart emas
 
 # ----------------------
-# 1️⃣ Upload qismi
-uploaded = st.file_uploader("📤 Rasm yoki video yuklash")
+# 1️⃣ Fayl yuklash
+uploaded = st.file_uploader("📤 Rasm, video yoki fayl yuklash")
 
 if uploaded:
     content = uploaded.read()
@@ -30,7 +28,7 @@ if uploaded:
     response = requests.put(url, json=data, headers=HEADERS)
 
     if response.status_code == 201:
-        st.success(f"✅ Cloud ga saqlandi: {uploaded.name}")
+        st.success(f"✅ Saqlandi: {uploaded.name}")
     elif response.status_code == 422:
         st.warning("⚠️ Bu fayl allaqachon mavjud")
     else:
@@ -39,7 +37,7 @@ if uploaded:
 st.divider()
 
 # ----------------------
-# 2️⃣ Gallery va Download qismi
+# 2️⃣ Gallery va Download
 st.subheader("📂 Cloud ichidagi fayllar")
 
 url_get = f"https://api.github.com/repos/{REPO}/contents/storage"
