@@ -1,16 +1,27 @@
 import streamlit as st
 import requests
 import base64
+import json
+import os
 
 st.set_page_config(page_title="☁️ My Cloud Drive", layout="wide")
 st.title("☁️ My Personal Cloud Drive")
 
 # ----------------------
-# 0️⃣ Secrets
+# Local password fayli
+PASSWORD_FILE = "password.json"
+if not os.path.exists(PASSWORD_FILE):
+    with open(PASSWORD_FILE, "w") as f:
+        json.dump({"password": "1234"}, f)  # default parol
+
+# password o'qish
+with open(PASSWORD_FILE, "r") as f:
+    APP_PASSWORD = json.load(f)["password"]
+
+# ----------------------
+# Secrets (GitHub)
 TOKEN = st.secrets["GITHUB_TOKEN"]
 REPO = st.secrets["GITHUB_REPO"]
-APP_PASSWORD = st.secrets.get("APP_PASSWORD", "1234")  # Default parol faqat secrets bo‘lmasa
-
 HEADERS = {"Authorization": f"token {TOKEN}"}
 
 # ----------------------
@@ -29,10 +40,7 @@ if not st.session_state["authenticated"]:
     st.stop()
 
 # ----------------------
-
-
-# ----------------------
-# 3️⃣ Tabs: Rasmlar, Videolar, Boshqalar
+# 2️⃣ Tabs: Rasmlar, Videolar, Boshqalar
 tabs = st.tabs(["Rasmlar", "Videolar", "Boshqalar"])
 file_types = {
     "Rasmlar": [".png", ".jpg", ".jpeg", ".webp"],
@@ -41,7 +49,7 @@ file_types = {
 }
 
 # ----------------------
-# 4️⃣ Fayl upload
+# 3️⃣ Fayl upload
 uploaded = st.file_uploader("📤 Fayl yuklash")
 if uploaded:
     content = uploaded.read()
@@ -59,10 +67,9 @@ if uploaded:
         st.error(f"Xatolik: {response.status_code} - {response.text}")
 
 # ----------------------
-# 5️⃣ Fayllarni olish va bo‘limlash
+# 4️⃣ Fayllarni olish va bo‘limlash
 url_get = f"https://api.github.com/repos/{REPO}/contents/storage?ref=main"
 response = requests.get(url_get, headers=HEADERS)
-
 files = []
 if response.status_code == 200:
     files = response.json()
@@ -72,7 +79,7 @@ else:
     st.error(f"❌ Xatolik: {response.status_code} - {response.text}")
 
 # ----------------------
-# 6️⃣ Har tab uchun fayllarni ko‘rsatish
+# 5️⃣ Har tab uchun fayllarni ko‘rsatish
 for i, tab in enumerate(["Rasmlar", "Videolar", "Boshqalar"]):
     with tabs[i]:
         st.subheader(f"📂 {tab}")
@@ -117,20 +124,16 @@ for i, tab in enumerate(["Rasmlar", "Videolar", "Boshqalar"]):
                     else:
                         st.error(f"Xatolik: {del_response.status_code} - {del_response.text}")
 
-
-
-# 2️⃣ Parolni o‘zgartirish bo‘limi
-st.subheader("🔑 Parolni o‘zgartirish")
-new_pass = st.text_input("Yangi parol kiriting:", type="password", key="new_pass")
-confirm_pass = st.text_input("Yangi parolni tasdiqlang:", type="password", key="confirm_pass")
-
-if st.button("Parolni o‘zgartirish"):
-    if not new_pass or not confirm_pass:
-        st.warning("⚠️ Ikkala maydonni to‘ldiring")
-    elif new_pass != confirm_pass:
-        st.error("❌ Parollar mos kelmadi")
-    else:
-        st.info("ℹ️ Streamlit Cloud’da Secrets ni qo‘l bilan yangilang")  
-        st.success(f"✅ Parolni `{new_pass}` ga o‘zgartirish uchun adminga xabar bering")
-
-st.divider()
+# ----------------------
+# 6️⃣ Footer: Parolni o‘zgartirish
+st.markdown("---")
+with st.expander("🔑 Parolni o‘zgartirish"):
+    new_pass = st.text_input("Yangi parol kiriting:", type="password", key="new_pass")
+    confirm_pass = st.text_input("Tasdiqlang:", type="password", key="confirm_pass")
+    if st.button("Parolni yangilash"):
+        if not new_pass or new_pass != confirm_pass:
+            st.error("❌ Parollar mos emas yoki bo‘sh")
+        else:
+            with open(PASSWORD_FILE, "w") as f:
+                json.dump({"password": new_pass}, f)
+            st.success("✅ Parol muvaffaqiyatli yangilandi")
