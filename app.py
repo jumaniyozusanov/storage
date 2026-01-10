@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import base64
 
-st.set_page_config(page_title="☁️ My Cloud Drive", layout="wide")
+st.set_page_config(page_title="☁️ My Cloud ", layout="wide")
 st.title("☁️ My Personal Cloud Drive")
 
 # 🔹 Streamlit Secrets
@@ -64,3 +64,4 @@ elif response.status_code == 404:
     st.info("📂 Storage papkasi mavjud emas, birinchi faylni yuklang")
 else:
     st.error(f"❌ Xatolik: {response.status_code} - {response.text}")
+
