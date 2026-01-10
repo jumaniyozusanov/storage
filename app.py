@@ -29,21 +29,7 @@ if not st.session_state["authenticated"]:
     st.stop()
 
 # ----------------------
-# 2️⃣ Parolni o‘zgartirish bo‘limi
-st.subheader("🔑 Parolni o‘zgartirish")
-new_pass = st.text_input("Yangi parol kiriting:", type="password", key="new_pass")
-confirm_pass = st.text_input("Yangi parolni tasdiqlang:", type="password", key="confirm_pass")
 
-if st.button("Parolni o‘zgartirish"):
-    if not new_pass or not confirm_pass:
-        st.warning("⚠️ Ikkala maydonni to‘ldiring")
-    elif new_pass != confirm_pass:
-        st.error("❌ Parollar mos kelmadi")
-    else:
-        st.info("ℹ️ Streamlit Cloud’da Secrets ni qo‘l bilan yangilang")  
-        st.success(f"✅ Parolni `{new_pass}` ga o‘zgartirish uchun adminga xabar bering")
-
-st.divider()
 
 # ----------------------
 # 3️⃣ Tabs: Rasmlar, Videolar, Boshqalar
@@ -130,3 +116,21 @@ for i, tab in enumerate(["Rasmlar", "Videolar", "Boshqalar"]):
                         st.experimental_rerun()
                     else:
                         st.error(f"Xatolik: {del_response.status_code} - {del_response.text}")
+
+
+
+# 2️⃣ Parolni o‘zgartirish bo‘limi
+st.subheader("🔑 Parolni o‘zgartirish")
+new_pass = st.text_input("Yangi parol kiriting:", type="password", key="new_pass")
+confirm_pass = st.text_input("Yangi parolni tasdiqlang:", type="password", key="confirm_pass")
+
+if st.button("Parolni o‘zgartirish"):
+    if not new_pass or not confirm_pass:
+        st.warning("⚠️ Ikkala maydonni to‘ldiring")
+    elif new_pass != confirm_pass:
+        st.error("❌ Parollar mos kelmadi")
+    else:
+        st.info("ℹ️ Streamlit Cloud’da Secrets ni qo‘l bilan yangilang")  
+        st.success(f"✅ Parolni `{new_pass}` ga o‘zgartirish uchun adminga xabar bering")
+
+st.divider()
