@@ -3,6 +3,18 @@ import requests
 import base64
 import json
 import os
+st.markdown("""
+<style>
+/* GitHub link, toolbar va menyularni yashirish */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+a[href*="github.com"] {display: none !important;}
+button[kind="header"] {display: none !important;}
+</style>
+""", unsafe_allow_html=True)
+
+
 
 st.set_page_config(page_title="☁️ My Cloud Drive", layout="wide")
 st.title("☁️ My Personal Cloud Drive")
