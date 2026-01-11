@@ -3,10 +3,8 @@ import os
 import requests
 from io import BytesIO
 
-# ======================
-# STREAMLIT UI SECURITY
-# ======================
-st.set_page_config(page_title="My Private App", layout="wide")
+# ===== STYLE =====
+st.set_page_config(page_title="Private Dashboard", layout="wide")
 st.markdown("""
 <style>
 #MainMenu {visibility: hidden;}
@@ -15,25 +13,21 @@ header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# ======================
-# SECRETS / TOKEN
-# ======================
+# ===== SECRETS =====
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 GITHUB_REPO = os.getenv("GITHUB_REPO", "jumaniyozusanov/storage")
 
 if GITHUB_TOKEN == "":
-    st.error("❌ GitHub token topilmadi! App ishlamaydi. Secrets qo‘ying va Reboot qiling.")
+    st.error("❌ GitHub token topilmadi! Secrets qo‘ying va Reboot qiling.")
     st.stop()
 
 HEADERS = {"Authorization": f"token {GITHUB_TOKEN}"}
 
-# ======================
-# LOGIN PANEL
-# ======================
+# ===== LOGIN =====
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "password" not in st.session_state:
-    st.session_state.password = "1234"  # default parol, keyin o‘zgartiriladi
+    st.session_state.password = "1234"  # default password
 
 def login():
     if st.session_state.input_password == st.session_state.password:
@@ -47,14 +41,10 @@ if not st.session_state.logged_in:
     st.button("Kirish", on_click=login)
     st.stop()
 
-# ======================
-# DASHBOARD
-# ======================
+# ===== DASHBOARD =====
 st.title("✅ Welcome to Private App")
 
-# ======================
-# PAROL O'ZGARTIRISH
-# ======================
+# ===== CHANGE PASSWORD =====
 with st.expander("🔑 Parolni o‘zgartirish", expanded=False):
     old_pw = st.text_input("Joriy parolni kiriting", type="password")
     new_pw = st.text_input("Yangi parolni kiriting", type="password")
@@ -65,11 +55,8 @@ with st.expander("🔑 Parolni o‘zgartirish", expanded=False):
         else:
             st.error("❌ Joriy parol noto‘g‘ri!")
 
-# ======================
-# FILE UPLOAD / DISPLAY
-# ======================
+# ===== FILE UPLOAD / DISPLAY =====
 st.header("📁 Fayllar bo‘limi")
-
 uploaded_file = st.file_uploader("Rasm yoki video yuklash", type=["png","jpg","jpeg","mp4","mov"])
 if uploaded_file:
     st.success(f"{uploaded_file.name} yuklandi ✅")
@@ -78,11 +65,8 @@ if uploaded_file:
     elif uploaded_file.type.startswith("video/"):
         st.video(uploaded_file)
 
-# ======================
-# GITHUB PRIVATE REPO FILES
-# ======================
+# ===== GITHUB PRIVATE REPO FILES =====
 st.header("🌐 GitHub Private Repo Fayllari")
-
 GITHUB_API_URL = f"https://api.github.com/repos/{GITHUB_REPO}/contents/"
 
 response = requests.get(GITHUB_API_URL, headers=HEADERS)
